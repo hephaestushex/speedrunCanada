@@ -11,6 +11,8 @@ typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, ENDING } GameScreen;
 void mousePressed(maxX, minX, maxY, minY)
 {
     // return IsMouseButtonPressed() && 
+    //GetMouseX()
+    //GetMouseY()
 }
 
 //------------------------------------------------------------------------------------------
