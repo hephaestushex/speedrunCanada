@@ -8,6 +8,11 @@ bool gameWon = false;
 //------------------------------------------------------------------------------------------
 typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, ENDING } GameScreen;
 
+void mousePressed(maxX, minX, maxY, minY)
+{
+    // return IsMouseButtonPressed() && 
+}
+
 //------------------------------------------------------------------------------------------
 // Main entry point
 //------------------------------------------------------------------------------------------
@@ -16,7 +21,7 @@ int main(void)
     // Initialization
     //--------------------------------------------------------------------------------------
     const int screenWidth = 800;
-    const int screenHeight = 450;
+    const int screenHeight = 800;
 
     InitWindow(screenWidth, screenHeight, "speedrunCanada!");
 
@@ -100,7 +105,7 @@ int main(void)
                     // TODO: Draw TITLE screen here!
                     DrawRectangle(0, 0, screenWidth, screenHeight, BLUE);
                     DrawText("speedrunCanada!", 20, 20, 40, BLACK);
-                    DrawText("PRESS ENTER or TAP to JUMP to GAMEPLAY SCREEN", 120, 220, 20, DARKGREEN);
+                    DrawRectangle(screenWidth / 4 - screenWidth, screen)
 
                 } break;
                 case GAMEPLAY:
@@ -121,6 +126,8 @@ int main(void)
                 } break;
                 default: break;
             }
+            
+            // made entirely by le duck
 
         EndDrawing();
         //----------------------------------------------------------------------------------
