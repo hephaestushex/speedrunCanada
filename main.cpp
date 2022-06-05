@@ -8,11 +8,9 @@ bool gameWon = false;
 //------------------------------------------------------------------------------------------
 typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, ENDING } GameScreen;
 
-void mousePressed(maxX, minX, maxY, minY)
+bool mousePressed(float maxX, float minX, float maxY, float minY)
 {
-    // return IsMouseButtonPressed() && 
-    //GetMouseX()
-    //GetMouseY()
+    return IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && GetMouseX() < maxX && GetMouseX() > minX && GetMouseY() < maxY && GetMouseY() > minY;
 }
 
 //------------------------------------------------------------------------------------------
@@ -107,8 +105,6 @@ int main(void)
                     // TODO: Draw TITLE screen here!
                     DrawRectangle(0, 0, screenWidth, screenHeight, BLUE);
                     DrawText("speedrunCanada!", 20, 20, 40, BLACK);
-                    DrawRectangle(screenWidth / 4 - screenWidth, screen)
-
                 } break;
                 case GAMEPLAY:
                 {
