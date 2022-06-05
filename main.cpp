@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "buttons.hpp"
 
 bool play = false;
 bool gameOver = false;
@@ -7,6 +8,8 @@ bool gameWon = false;
 // Types and Structures Definition
 //------------------------------------------------------------------------------------------
 typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, ENDING } GameScreen;
+
+Button playButton(0, 0, 64, 32, "PLAY!");
 
 bool mousePressed(float maxX, float minX, float maxY, float minY)
 {
@@ -21,7 +24,7 @@ int main(void)
     // Initialization
     //--------------------------------------------------------------------------------------
     const int screenWidth = 800;
-    const int screenHeight = 800;
+    const int screenHeight = 600;
 
     InitWindow(screenWidth, screenHeight, "speedrunCanada!");
 
@@ -62,6 +65,10 @@ int main(void)
                 {
                     currentScreen = GAMEPLAY;
                 }
+
+                playButton.x = screenWidth - screenWidth / 4;
+                playButton.y = screenHeight / 4;
+
             } break;
             case GAMEPLAY:
             {
@@ -104,7 +111,9 @@ int main(void)
                 {
                     // TODO: Draw TITLE screen here!
                     DrawRectangle(0, 0, screenWidth, screenHeight, BLUE);
+                    DrawRectangleRec(playButton.getRect(), GREEN);
                     DrawText("speedrunCanada!", 20, 20, 40, BLACK);
+                    DrawText(playButton.innerText, playButton.x + 16, playButton.y + 16, 16, BLACK);
                 } break;
                 case GAMEPLAY:
                 {

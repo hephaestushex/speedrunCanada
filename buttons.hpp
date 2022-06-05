@@ -4,12 +4,10 @@
 
 class Button
 {
-    private:
-    
+    public:
+
     float x, y, width, height;
     const char *innerText;
-
-    public:
     
     Button(float bX, float bY, float bWidth, float bHeight, const char *text)
     {
