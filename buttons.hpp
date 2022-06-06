@@ -7,17 +7,14 @@ class Button
     public:
 
     float x, y, width, height;
-    const char *innerText;
-    
-    Button(float bX, float bY, float bWidth, float bHeight, const char *text)
+
+    Button(float bX, float bY, float bWidth, float bHeight)
     {
-        innerText=nullptr;
-        text = nullptr;
-        x=bX;y=bY;width=bWidth;height=bHeight;innerText=text;
+        x=bX;y=bY;width=bWidth;height=bHeight;
     }
 
     Rectangle getRect()
     {
-        return Rectangle{x - width / 2, y - height / 2, width, height};
+        return Rectangle{x, y, width, height};
     }
 };
