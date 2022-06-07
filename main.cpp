@@ -1,6 +1,7 @@
 #include <iostream>
 #include "raylib.h"
-#include "buttons.hpp"
+#include "include/buttons.hpp"
+#include "include/player.hpp"
 
 bool play = false;
 bool gameOver = false;
@@ -33,6 +34,7 @@ int main(void)
 
     Button playButton(screenWidth / 4, screenHeight - screenHeight / 4, 64, 32);
     Button exitButton(screenWidth - screenWidth / 4, screenHeight - screenHeight / 4, 64, 32);
+    Player player(screenWidth, screenHeight, 200, 32, 32);
 
     int framesCounter = 0;          // Useful to count frames
 
@@ -47,7 +49,7 @@ int main(void)
 
         // Game over handling logic code
         if (gameOver) break;
-        
+
         switch(currentScreen)
         {
             case LOGO:
@@ -98,7 +100,7 @@ int main(void)
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
-            ClearBackground(RAYWHITE);
+            ClearBackground(BLUE);
 
             switch(currentScreen)
             {
@@ -120,10 +122,6 @@ int main(void)
                 case GAMEPLAY:
                 {
                     // TODO: Draw GAMEPLAY screen here!
-                    DrawRectangle(0, 0, screenWidth, screenHeight, PURPLE);
-                    DrawText("GAMEPLAY SCREEN", 20, 20, 40, MAROON);
-                    DrawText("PRESS ENTER or TAP to JUMP to ENDING SCREEN", 130, 220, 20, MAROON);
-
                 } break;
                 case ENDING:
                 {

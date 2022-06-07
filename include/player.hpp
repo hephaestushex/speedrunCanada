@@ -22,7 +22,7 @@ class Player
         {
             // Rectangle me = {x - width / 2, y - height / 2, width, height};
             // return me;
-            return Rectangle{x - width / 2, y - height / 2, width, height};
+            return Rectangle{x, y, width, height};
         }
 
         void draw()
@@ -41,11 +41,7 @@ class Player
                 x = 0 + width/2;
             }
 
-            //std:: cout << x << std::endl; //Uncomment this to debug x
-
-            
             DrawRectangleRec(getRect(), WHITE);
-        }
+        }	
 
-	
 };
