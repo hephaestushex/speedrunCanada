@@ -33,9 +33,10 @@ int main(void)
 
     // TODO: Initialize all required variables and load all required data here!
 
-    Button playButton(screenWidth / 4, screenHeight - screenHeight / 4, 64, 32);
-    Button exitButton(screenWidth - screenWidth / 4, screenHeight - screenHeight / 4, 64, 32);
-    Player player(screenWidth, screenHeight, 200, 32, 32);
+    Button playButton(screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64);
+    Button exitButton(screenWidth - screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64);
+    Player player(0, screenHeight - screenHeight / 4 + 32, 200, 32, 32);
+    Object ground(0, screenHeight - screenHeight / 4, screenWidth, screenHeight);
 
     int framesCounter = 0;          // Useful to count frames
 
@@ -82,6 +83,8 @@ int main(void)
                 {
                     currentScreen = ENDING;
                 }
+
+            
             } break;
             case ENDING:
             {
@@ -117,13 +120,14 @@ int main(void)
                     DrawRectangleRec(playButton.getRect(), GREEN);
                     DrawRectangleRec(exitButton.getRect(), RED);
                     DrawText("speedrunCanada!", 20, 20, 40, BLACK);
-                    DrawText("PLAY", playButton.x + 11, playButton.y + 8, 16, BLACK);
-                    DrawText("EXIT", exitButton.x + 11, exitButton.y + 8, 16, BLACK);   
+                    DrawText("PLAY", playButton.x + playButton.width / 4, playButton.y + playButton.height / 4, 32, BLACK);
+                    DrawText("EXIT", exitButton.x + exitButton.width / 4, exitButton.y + exitButton.height / 4, 32, BLACK);   
                 } break;
                 case GAMEPLAY:
                 {
                     DrawRectangle(0, 0, screenWidth, screenHeight, BLUE);
-                    
+                    DrawRectangleRec(ground.getRect(), GREEN);
+                    player.draw();
                 } break;
                 case ENDING:
                 {
