@@ -10,7 +10,7 @@ bool gameWon = false;
 //------------------------------------------------------------------------------------------
 typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, ENDING } GameScreen;
 
-bool mousePressed(float maxX, float minX, float maxY, float minY)
+bool mouseClickInRange(float maxX, float minX, float maxY, float minY)
 {
     return IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && GetMouseX() < maxX && GetMouseX() > minX && GetMouseY() < maxY && GetMouseY() > minY;
 }
@@ -32,7 +32,7 @@ int main(void)
     // TODO: Initialize all required variables and load all required data here!
 
     Button playButton(screenWidth / 4, screenHeight - screenHeight / 4, 64, 32);
-    Button exitButton(screenWidth - screenWidth / 4, screenHeight - scre    )
+    Button exitButton(screenWidth - screenWidth / 4, screenHeight - screenHeight / 4, 64, 32);
 
     int framesCounter = 0;          // Useful to count frames
 
@@ -44,6 +44,10 @@ int main(void)
     {
         // Update
         //----------------------------------------------------------------------------------
+
+        // Game over handling logic code
+        if (gameOver) break;
+        
         switch(currentScreen)
         {
             case LOGO:
@@ -60,15 +64,11 @@ int main(void)
             } break;
             case TITLE:
             {
-                // TODO: Update TITLE screen variables here!
+                if (mouseClickInRange(playButton.x + playButton.width, playButton.x, playButton.y + playButton.height, playButton.y)) play = true;
+    
+                if (mouseClickInRange(exitButton.x + exitButton.width, exitButton.x, exitButton.y + exitButton.height, exitButton.y)) gameOver = true;
 
-                // Press enter to change to GAMEPLAY screen
-                if (play)
-                {
-                    currentScreen = GAMEPLAY;
-                }
-
-                
+                if (play) currentScreen = GAMEPLAY;
             } break;
             case GAMEPLAY:
             {
@@ -112,8 +112,10 @@ int main(void)
                     // TODO: Draw TITLE screen here!
                     DrawRectangle(0, 0, screenWidth, screenHeight, BLUE);
                     DrawRectangleRec(playButton.getRect(), GREEN);
+                    DrawRectangleRec(exitButton.getRect(), RED);
                     DrawText("speedrunCanada!", 20, 20, 40, BLACK);
-                    DrawText("PLAY!", playButton.x + 10, playButton.y + 8, 16, BLACK);
+                    DrawText("PLAY", playButton.x + 11, playButton.y + 8, 16, BLACK);
+                    DrawText("EXIT", exitButton.x + 11, exitButton.y + 8, 16, BLACK);   
                 } break;
                 case GAMEPLAY:
                 {
@@ -134,7 +136,6 @@ int main(void)
                 default: break;
             }
             
-            // made entirely by le duck
 
         EndDrawing();
         //----------------------------------------------------------------------------------
