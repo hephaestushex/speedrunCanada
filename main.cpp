@@ -2,6 +2,7 @@
 #include "raylib.h"
 #include "include/buttons.hpp"
 #include "include/player.hpp"
+#include "include/objects.hpp"
 
 bool play = false;
 bool gameOver = false;
@@ -100,7 +101,7 @@ int main(void)
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
-            ClearBackground(BLUE);
+            ClearBackground(RAYWHITE);
 
             switch(currentScreen)
             {
@@ -121,7 +122,8 @@ int main(void)
                 } break;
                 case GAMEPLAY:
                 {
-                    // TODO: Draw GAMEPLAY screen here!
+                    DrawRectangle(0, 0, screenWidth, screenHeight, BLUE);
+                    
                 } break;
                 case ENDING:
                 {

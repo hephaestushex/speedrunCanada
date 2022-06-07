@@ -18,12 +18,7 @@ class Player
             
 	    }
 
-        Rectangle getRect()
-        {
-            // Rectangle me = {x - width / 2, y - height / 2, width, height};
-            // return me;
-            return Rectangle{x, y, width, height};
-        }
+        Rectangle getRect(){return Rectangle{x, y, width, height};}
 
         void draw()
         {
