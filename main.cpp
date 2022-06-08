@@ -7,6 +7,12 @@
 bool play = false;
 bool gameOver = false;
 bool gameWon = false;
+bool levelStart = true;
+bool falling = false;
+bool jumping = false;
+
+float gravity = 1.025;
+float maxJumpHeight;
 //------------------------------------------------------------------------------------------
 // Types and Structures Definition
 //------------------------------------------------------------------------------------------
@@ -35,8 +41,9 @@ int main(void)
 
     Button playButton(screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64);
     Button exitButton(screenWidth - screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64);
-    Player player(0, screenHeight - screenHeight / 4 + 32, 200, 32, 32);
+    Player player(0, 0, 200, 32, 32);
     Object ground(0, screenHeight - screenHeight / 4, screenWidth, screenHeight);
+    maxJumpHeight = player.height * 2 + ground.y;
 
     int framesCounter = 0;          // Useful to count frames
 
@@ -84,7 +91,51 @@ int main(void)
                     currentScreen = ENDING;
                 }
 
+                if (levelStart)
+                {
+                   player.x = ground.x;
+                   player.y = ground.y - player.height;
+                   levelStart = false; 
+                }
             
+                if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
+                {
+                    player.x -= player.speed * GetFrameTime();
+                }
+
+                if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))
+                {
+                    player.x += player.speed * GetFrameTime();
+                }
+
+                if (player.y > maxJumpHeight)
+                {
+                    jumping = false;
+                }
+                
+                if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))
+                {
+                    if (player.y > maxJumpHeight)
+                    {
+                        player.y -= player.speed * GetFrameTime();
+                        jumping = true;
+                    }
+
+                    else
+                    {
+                        jumping = false;
+                    }
+                }
+
+                if (player.y < ground.y && !jumping)
+                {
+                    player.y = ground.y - player.height;
+                    falling = false;
+                }
+
+                if (player.x < 0) player.x = 0;
+
+                if (player.x > screenWidth) player.x = screenWidth;
             } break;
             case ENDING:
             {
