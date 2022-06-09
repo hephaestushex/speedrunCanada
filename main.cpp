@@ -8,10 +8,10 @@ bool play = false;
 bool gameOver = false;
 bool gameWon = false;
 bool levelStart = true;
-bool falling = false;
-bool jumping = false;
+bool grounded = false;
+bool jump = false;
 
-float gravity = 1.025;
+float gravity = 0;
 float maxJumpHeight;
 //------------------------------------------------------------------------------------------
 // Types and Structures Definition
@@ -43,7 +43,9 @@ int main(void)
     Button exitButton(screenWidth - screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64);
     Player player(0, 0, 200, 32, 32);
     Object ground(0, screenHeight - screenHeight / 4, screenWidth, screenHeight);
-    maxJumpHeight = player.height * 2 + ground.y;
+    maxJumpHeight = ground.y - player.height * 4;
+
+    //seed the pseudorand
 
     int framesCounter = 0;          // Useful to count frames
 
@@ -95,6 +97,8 @@ int main(void)
                 {
                    player.x = ground.x;
                    player.y = ground.y - player.height;
+                   grounded = false;
+                   jump = false;
                    levelStart = false; 
                 }
             
@@ -108,30 +112,24 @@ int main(void)
                     player.x += player.speed * GetFrameTime();
                 }
 
-                if (player.y > maxJumpHeight)
-                {
-                    jumping = false;
-                }
-                
-                if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))
-                {
-                    if (player.y > maxJumpHeight)
-                    {
-                        player.y -= player.speed * GetFrameTime();
-                        jumping = true;
-                    }
+                if (!grounded) gravity += 10 * GetFrameTime();
 
-                    else
-                    {
-                        jumping = false;
-                    }
-                }
+                player.y += gravity;
 
-                if (player.y < ground.y && !jumping)
+                if (grounded) gravity = 0;
+
+                if ((IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP)) && grounded) jump = true;
+
+                if (player.y >= ground.y - player.height)
                 {
                     player.y = ground.y - player.height;
-                    falling = false;
+                    grounded = true;
                 }
+                else grounded = false;
+
+                if (player.y > maxJumpHeight && jump)player.y -= player.height / 2;
+
+                if (player.y <= maxJumpHeight + 50) jump = false;
 
                 if (player.x < 0) player.x = 0;
 
