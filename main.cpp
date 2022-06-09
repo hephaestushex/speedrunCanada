@@ -15,6 +15,10 @@ bool jump = false;
 
 float gravity = 0;
 float maxJumpHeight;
+float level = 0;
+float maxEnemies = level * 5;
+float levelEnemyHits = level * 10;
+
 //------------------------------------------------------------------------------------------
 // Types and Structures Definition
 //------------------------------------------------------------------------------------------
@@ -44,7 +48,11 @@ int main(void)
     Button playButton(screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64);
     Button exitButton(screenWidth - screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64);
     Player player(0, 0, 200, 32, 32);
+    Player spear(player.x, player.y, 0, 32, 32);
     Object ground(0, screenHeight - screenHeight / 4, screenWidth, screenHeight);
+
+
+
     maxJumpHeight = ground.y - player.height * 4 - player.height;
 
     //seed the pseudorand generator
@@ -99,11 +107,14 @@ int main(void)
 
                 if (levelStart)
                 {
-                   player.x = ground.x;
-                   player.y = ground.y - player.height;
-                   grounded = false;
-                   jump = false;
-                   levelStart = false; 
+                    level++;
+                    float maxEnemies = level * 5;
+                    float levelEnemyHits = level * 10;
+                    player.x = ground.x;
+                    player.y = ground.y - player.height;
+                    grounded = false;
+                    jump = false;
+                    levelStart = false; 
                 }
             
                 if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
@@ -115,6 +126,8 @@ int main(void)
                 {
                     player.x += player.speed * GetFrameTime();
                 }
+
+
 
                 if (!grounded) gravity += 10 * GetFrameTime();
 
