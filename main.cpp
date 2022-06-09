@@ -12,12 +12,12 @@ bool levelStart = true;
 bool grounded = false;
 bool jump = false;
 
-
 float gravity = 0;
 float maxJumpHeight;
 float level = 0;
 float maxEnemies = level * 5;
 float levelEnemyHits = level * 10;
+float health = 3;
 
 //------------------------------------------------------------------------------------------
 // Types and Structures Definition
@@ -50,10 +50,13 @@ int main(void)
     Player player(0, 0, 200, 32, 32);
     Player spear(player.x, player.y, 0, 32, 32);
     Object ground(0, screenHeight - screenHeight / 4, screenWidth, screenHeight);
+    Object health1(screenWidth - 96, 0, 32, 32);
+    Object health2(screenWidth - 64, 0, 32, 32);
+    Object health3(screenWidth - 32, 0, 32, 32);
+    Enemy enemy1(screenWidth / 2 - 64, ground.y - 32, 400, 32, 32, levelEnemyHits);
+    Enemy enemy2(screenWidth / 2 + 64, ground.y - 32, 400, 32, 32, levelEnemyHits);
 
-
-
-    maxJumpHeight = ground.y - player.height * 4 - player.height;
+    maxJumpHeight = ground.y - player.height * 5 - player.height;
 
     //seed the pseudorand generator
 
@@ -135,7 +138,7 @@ int main(void)
 
                 if (grounded) gravity = 0;
 
-                if ((IsKeyDown(KEY_W) || IsKeyDown(KEY_UP)) && grounded) jump = true;
+                if ((IsKeyDown(87) || IsKeyDown(KEY_UP)) && grounded) jump = true;
 
                 if (player.y >= ground.y - player.height)
                 {
@@ -151,6 +154,13 @@ int main(void)
                 if (player.x < 0) player.x = GetScreenWidth();
 
                 if (player.x > screenWidth) player.x = 0;
+
+                if (framesCounter % 30 == 0)
+                {
+                    if (player.x < enemy1.x && enemy1.x - player.x < 200) enemy1.x -= enemy1.speed * GetFrameTime();
+                    if (player.x > enemy1.x && player.x - enemy1.x < 200) enemy1.x += enemy1.speed * GetFrameTime();
+                }
+
             } break;
             case BOSS:
             {
@@ -194,6 +204,8 @@ int main(void)
                     DrawRectangle(0, 0, screenWidth, screenHeight, BLUE);
                     DrawRectangleRec(ground.getRect(), GREEN);
                     player.draw();
+                    enemy1.draw();
+                    enemy2.draw();
                 } break;
                 case BOSS:
                 {

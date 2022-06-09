@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include <iostream>
+#include <map>
 
 float y;
 float gravity;
@@ -20,6 +21,10 @@ int main()
 
     // sets up game variables
     setup();
+
+	std::map<std::string, int> map1={{"w", 86}, {"a", 76}};
+
+	std::cout << map1["w"] << std::endl;
 
     // game code
 	while (!WindowShouldClose())

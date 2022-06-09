@@ -28,7 +28,7 @@ class Enemy
                 width+=100 * GetFrameTime();
             }
             
-            DrawRectangleRec(getRect(), WHITE);
+            DrawRectangleRec(getRect(), BLACK);
         }	
 
 };
