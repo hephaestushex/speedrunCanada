@@ -45,7 +45,9 @@ int main(void)
     Object ground(0, screenHeight - screenHeight / 4, screenWidth, screenHeight);
     maxJumpHeight = ground.y - player.height * 4;
 
-    //seed the pseudorand
+    //seed the pseudorand generator
+
+    srand(time(0));
 
     int framesCounter = 0;          // Useful to count frames
 
