@@ -3,6 +3,7 @@
 #include "include/buttons.hpp"
 #include "include/player.hpp"
 #include "include/objects.hpp"
+#include "include/enemy.hpp"
 
 bool play = false;
 bool gameOver = false;
@@ -11,12 +12,13 @@ bool levelStart = true;
 bool grounded = false;
 bool jump = false;
 
+
 float gravity = 0;
 float maxJumpHeight;
 //------------------------------------------------------------------------------------------
 // Types and Structures Definition
 //------------------------------------------------------------------------------------------
-typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, ENDING } GameScreen;
+typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, BOSS} GameScreen;
 
 bool mouseClickInRange(float maxX, float minX, float maxY, float minY)
 {
@@ -43,7 +45,7 @@ int main(void)
     Button exitButton(screenWidth - screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64);
     Player player(0, 0, 200, 32, 32);
     Object ground(0, screenHeight - screenHeight / 4, screenWidth, screenHeight);
-    maxJumpHeight = ground.y - player.height * 4;
+    maxJumpHeight = ground.y - player.height * 4 - player.height;
 
     //seed the pseudorand generator
 
@@ -89,10 +91,10 @@ int main(void)
             {
                 // TODO: Update GAMEPLAY screen variables here!
 
-                // Press enter to change to ENDING screen
+                // Press enter to change to BOSS screen
                 if (gameOver)
                 {
-                    currentScreen = ENDING;
+                    currentScreen = BOSS;
                 }
 
                 if (levelStart)
@@ -120,7 +122,7 @@ int main(void)
 
                 if (grounded) gravity = 0;
 
-                if ((IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP)) && grounded) jump = true;
+                if ((IsKeyDown(KEY_W) || IsKeyDown(KEY_UP)) && grounded) jump = true;
 
                 if (player.y >= ground.y - player.height)
                 {
@@ -129,17 +131,17 @@ int main(void)
                 }
                 else grounded = false;
 
-                if (player.y > maxJumpHeight && jump)player.y -= player.height / 2;
+                if (player.y > maxJumpHeight && jump)player.y -= player.height / 4;
 
                 if (player.y <= maxJumpHeight + 50) jump = false;
 
-                if (player.x < 0) player.x = 0;
+                if (player.x < 0) player.x = GetScreenWidth();
 
-                if (player.x > screenWidth) player.x = screenWidth;
+                if (player.x > screenWidth) player.x = 0;
             } break;
-            case ENDING:
+            case BOSS:
             {
-                // TODO: Update ENDING screen variables here!
+                // TODO: Update BOSS screen variables here!
 
                 // Press enter to return to TITLE screen
                 if (IsKeyPressed(KEY_ENTER))
@@ -180,11 +182,11 @@ int main(void)
                     DrawRectangleRec(ground.getRect(), GREEN);
                     player.draw();
                 } break;
-                case ENDING:
+                case BOSS:
                 {
-                    // TODO: Draw ENDING screen here!
+                    // TODO: Draw BOSS screen here!
                     DrawRectangle(0, 0, screenWidth, screenHeight, BLUE);
-                    DrawText("ENDING SCREEN", 20, 20, 40, DARKBLUE);
+                    DrawText("BOSS SCREEN", 20, 20, 40, DARKBLUE);
                     DrawText("PRESS ENTER or TAP to RETURN to TITLE SCREEN", 120, 220, 20, DARKBLUE);
 
                 } break;

@@ -26,16 +26,7 @@ class Player
             {
                 width+=100 * GetFrameTime();
             }
-        
-            if (x + width/2 >= GetScreenWidth())
-            {
-                x = GetScreenWidth() - width/2;
-            }
-            else if (x - width/2 <= 0)
-            {
-                x = 0 + width/2;
-            }
-
+            
             DrawRectangleRec(getRect(), WHITE);
         }	
 
