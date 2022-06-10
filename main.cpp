@@ -11,6 +11,7 @@ bool levelStart = true;
 bool grounded = false;
 bool jump = false;
 bool spearFallen = false;
+bool leaveGame = false;
 
 float gravity = 0;
 float maxJumpHeight;
@@ -19,6 +20,7 @@ float maxEnemies = level * 5;
 float levelEnemyHits = level * 10;
 float health = 3;
 float spearTargetX;
+float spearDirection;
 
 //------------------------------------------------------------------------------------------
 // Types and Structures Definition
@@ -51,8 +53,8 @@ int main(void)
     Object playButton(screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64, GREEN);
     Object exitButton(screenWidth - screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64, RED);
     Object ground(0, screenHeight - screenHeight / 4, screenWidth, screenHeight, GREEN);
-    Object health1(screenWidth - 96, 0, 32, 32, RED);
-    Object health2(screenWidth - 64, 0, 32, 32, RED);
+    Object health1(screenWidth - 160, 0, 32, 32, RED);
+    Object health2(screenWidth - 96, 0, 32, 32, RED);
     Object health3(screenWidth - 32, 0, 32, 32, RED);
     Enemy enemy1(screenWidth / 2 - 64, ground.y - 32, 100, 32, 32, levelEnemyHits);
     Enemy enemy2(screenWidth / 2 + 64, ground.y - 32, 100, 32, 32, levelEnemyHits);
@@ -74,6 +76,8 @@ int main(void)
         // Update
         //----------------------------------------------------------------------------------
 
+        if (leaveGame) break;
+
         switch(currentScreen)
         {
             case LOGO:
@@ -92,9 +96,10 @@ int main(void)
             {
                 if (mouseClickInRange(playButton.x + playButton.width, playButton.x, playButton.y + playButton.height, playButton.y)) play = true;
     
-                if (mouseClickInRange(exitButton.x + exitButton.width, exitButton.x, exitButton.y + exitButton.height, exitButton.y)) gameOver = true;
+                if (mouseClickInRange(exitButton.x + exitButton.width, exitButton.x, exitButton.y + exitButton.height, exitButton.y)) leaveGame = true;
 
                 levelStart = true;
+                level = 0;
                 gameOver = false;
 
                 if (play) currentScreen = GAMEPLAY;
@@ -124,10 +129,14 @@ int main(void)
                     enemy2.y = ground.y - 32;
                     player.x = ground.x;
                     player.y = ground.y - player.height;
+                    spear.x = 0;
+                    spear.y = 0;
                     grounded = false;
                     jump = false;
                     levelStart = false;
                     spearFallen = false; 
+                    spearDirection = 0;
+                    spearTargetX = 0;
                 }
             
                 if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
@@ -140,34 +149,22 @@ int main(void)
                     player.x += player.speed * GetFrameTime();
                 }
 
-                if (IsKeyDown(KEY_SPACE) && !spearFallen)
+                if (IsKeyPressed(KEY_SPACE))  //&& spearDirection == 0 && !spearFallen) 
                 {
-                    spear.speed = 200;
+                    spearTargetX = player.x - spear.speed;
                     spear.x = player.x;
                     spear.y = ground.y - spear.height;
-                    if ((IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) && !spearFallen)
-                    { 
-                        spearTargetX = spear.x += spear.speed;     
-                    }
-                    if ((IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) && !spearFallen)
-                    {
-                        spearTargetX = spear.x -= spear.speed;
-                    }
+                    spearDirection = -1;
                 }
 
-                if (spear.speed != 0 && !spearFallen)
+                if (spearTargetX != 0 && spearDirection == -1)
                 {
-                    if (spearTargetX > spear.x && !spearFallen)
-                    { 
-                        spear.x += 10;
-                        if (spearTargetX > spear.x) spearFallen = true;
-                    }
-
-                    if (spearTargetX < spear.x && !spearFallen)
+                    spear.x -= spear.speed * GetFrameTime();
+                    if (spear.x < spearTargetX)
                     {
-                        spear.x -= 10;
-                        if (spearTargetX > spear.x)
-                        { spearFallen = true;
+                        spearDirection = 0;
+                        spearTargetX = 0;
+                        spearFallen = true;
                     }
                 }
 
@@ -216,8 +213,9 @@ int main(void)
 
                 if (CheckCollisionRecs(player.getRect(), spear.getRect()))
                 {
-                    spear.speed = 0;
                     spear.x = 0; spear.y = 0;
+                    spearTargetX = 0;
+                    spearDirection = 0;
                     spearFallen = false;
                 }
 
@@ -287,7 +285,8 @@ int main(void)
                         enemy1.draw();
                         enemy2.draw();
 
-                        if (spear.speed != 0) spear.draw();
+                        //if (spear.speed != 0) 
+                        spear.draw();
                     }
                 } break;
                 case BOSS:
