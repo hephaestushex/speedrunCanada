@@ -1,6 +1,5 @@
 #include <iostream>
 #include "raylib.h"
-#include "include/buttons.hpp"
 #include "include/player.hpp"
 #include "include/objects.hpp"
 #include "include/enemy.hpp"
@@ -11,6 +10,7 @@ bool gameWon = false;
 bool levelStart = true;
 bool grounded = false;
 bool jump = false;
+bool spearFallen = false;
 
 float gravity = 0;
 float maxJumpHeight;
@@ -18,6 +18,7 @@ float level = 0;
 float maxEnemies = level * 5;
 float levelEnemyHits = level * 10;
 float health = 3;
+float spearTargetX;
 
 //------------------------------------------------------------------------------------------
 // Types and Structures Definition
@@ -45,16 +46,16 @@ int main(void)
 
     // TODO: Initialize all required variables and load all required data here!
 
-    Button playButton(screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64);
-    Button exitButton(screenWidth - screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64);
     Player player(0, 0, 200, 32, 32);
     Player spear(player.x, player.y, 0, 32, 32);
-    Object ground(0, screenHeight - screenHeight / 4, screenWidth, screenHeight);
-    Object health1(screenWidth - 96, 0, 32, 32);
-    Object health2(screenWidth - 64, 0, 32, 32);
-    Object health3(screenWidth - 32, 0, 32, 32);
-    Enemy enemy1(screenWidth / 2 - 64, ground.y - 32, 400, 32, 32, levelEnemyHits);
-    Enemy enemy2(screenWidth / 2 + 64, ground.y - 32, 400, 32, 32, levelEnemyHits);
+    Object playButton(screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64, GREEN);
+    Object exitButton(screenWidth - screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64, RED);
+    Object ground(0, screenHeight - screenHeight / 4, screenWidth, screenHeight, GREEN);
+    Object health1(screenWidth - 96, 0, 32, 32, RED);
+    Object health2(screenWidth - 64, 0, 32, 32, RED);
+    Object health3(screenWidth - 32, 0, 32, 32, RED);
+    Enemy enemy1(screenWidth / 2 - 64, ground.y - 32, 100, 32, 32, levelEnemyHits);
+    Enemy enemy2(screenWidth / 2 + 64, ground.y - 32, 100, 32, 32, levelEnemyHits);
 
     maxJumpHeight = ground.y - player.height * 5 - player.height;
 
@@ -72,9 +73,6 @@ int main(void)
     {
         // Update
         //----------------------------------------------------------------------------------
-
-        // Game over handling logic code
-        if (gameOver) break;
 
         switch(currentScreen)
         {
@@ -96,28 +94,40 @@ int main(void)
     
                 if (mouseClickInRange(exitButton.x + exitButton.width, exitButton.x, exitButton.y + exitButton.height, exitButton.y)) gameOver = true;
 
+                levelStart = true;
+                gameOver = false;
+
                 if (play) currentScreen = GAMEPLAY;
             } break;
             case GAMEPLAY:
             {
+                framesCounter++;
                 // TODO: Update GAMEPLAY screen variables here!
 
                 // Press enter to change to BOSS screen
+                
                 if (gameOver)
                 {
-                    currentScreen = BOSS;
+                    if (framesCounter % 300 == 0) currentScreen = TITLE;
                 }
-
+                
                 if (levelStart)
                 {
                     level++;
+                    play = false;
+                    health = 3;
                     float maxEnemies = level * 5;
                     float levelEnemyHits = level * 10;
+                    enemy1.x = screenWidth / 2 - 64;
+                    enemy1.y = ground.y - 32;
+                    enemy2.x = screenWidth / 2 + 64;
+                    enemy2.y = ground.y - 32;
                     player.x = ground.x;
                     player.y = ground.y - player.height;
                     grounded = false;
                     jump = false;
-                    levelStart = false; 
+                    levelStart = false;
+                    spearFallen = false; 
                 }
             
                 if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
@@ -130,7 +140,38 @@ int main(void)
                     player.x += player.speed * GetFrameTime();
                 }
 
+                if (IsKeyDown(KEY_SPACE) && !spearFallen)
+                {
+                    spear.speed = 200;
+                    spear.x = player.x;
+                    spear.y = ground.y - spear.height;
+                    if ((IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) && !spearFallen)
+                    { 
+                        spearTargetX = spear.x += spear.speed;     
+                    }
+                    if ((IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) && !spearFallen)
+                    {
+                        spearTargetX = spear.x -= spear.speed;
+                    }
+                }
 
+                if (spear.speed != 0 && !spearFallen)
+                {
+                    if (spearTargetX > spear.x && !spearFallen)
+                    { 
+                        spear.x += 10;
+                        if (spearTargetX > spear.x) spearFallen = true;
+                    }
+
+                    if (spearTargetX < spear.x && !spearFallen)
+                    {
+                        spear.x -= 10;
+                        if (spearTargetX > spear.x)
+                        { spearFallen = true;
+                    }
+                }
+
+                if (spear.x < 0 || spear.x > GetScreenWidth() - spear.width) spearFallen = true;
 
                 if (!grounded) gravity += 10 * GetFrameTime();
 
@@ -138,7 +179,7 @@ int main(void)
 
                 if (grounded) gravity = 0;
 
-                if ((IsKeyDown(87) || IsKeyDown(KEY_UP)) && grounded) jump = true;
+                if ((IsKeyDown(KEY_W) || IsKeyDown(KEY_UP)) && grounded) jump = true;
 
                 if (player.y >= ground.y - player.height)
                 {
@@ -155,10 +196,29 @@ int main(void)
 
                 if (player.x > screenWidth) player.x = 0;
 
-                if (framesCounter % 30 == 0)
+                
+                if (player.x < enemy1.x && enemy1.x - player.x < 200 && player.y >= ground.y - maxJumpHeight / 2 - player.height) enemy1.x -= enemy1.speed * GetFrameTime();
+                if (player.x > enemy1.x && player.x - enemy1.x < 200 && player.y >= ground.y - maxJumpHeight / 2 - player.height) enemy1.x += enemy1.speed * GetFrameTime();
+                if (player.x < enemy2.x && enemy2.x - player.x < 200 && player.y >= ground.y - maxJumpHeight / 2 - player.height) enemy2.x -= enemy2.speed * GetFrameTime();
+                if (player.x > enemy2.x && player.x - enemy2.x < 200 && player.y >= ground.y - maxJumpHeight / 2 - player.height) enemy2.x += enemy2.speed * GetFrameTime();
+                if (enemy1.x < 0) enemy1.x = GetScreenWidth();
+                if (enemy1.x > screenWidth) enemy1.x = 0;
+                if (enemy2.x < 0) enemy2.x = GetScreenWidth();
+                if (enemy2.x > screenWidth) enemy2.x = 0;
+
+                if (CheckCollisionRecs(player.getRect(), enemy1.getRect()) || CheckCollisionRecs(player.getRect(), enemy2.getRect()))
                 {
-                    if (player.x < enemy1.x && enemy1.x - player.x < 200) enemy1.x -= enemy1.speed * GetFrameTime();
-                    if (player.x > enemy1.x && player.x - enemy1.x < 200) enemy1.x += enemy1.speed * GetFrameTime();
+                    health--;
+                    player.x = 0;
+                    player.y = 0;
+                    if (health < 1) gameOver = true;
+                }
+
+                if (CheckCollisionRecs(player.getRect(), spear.getRect()))
+                {
+                    spear.speed = 0;
+                    spear.x = 0; spear.y = 0;
+                    spearFallen = false;
                 }
 
             } break;
@@ -193,19 +253,42 @@ int main(void)
                 {
                     // TODO: Draw TITLE screen here!
                     DrawRectangle(0, 0, screenWidth, screenHeight, BLUE);
-                    DrawRectangleRec(playButton.getRect(), GREEN);
-                    DrawRectangleRec(exitButton.getRect(), RED);
+                    playButton.draw();
+                    exitButton.draw();
                     DrawText("speedrunCanada!", 20, 20, 40, BLACK);
                     DrawText("PLAY", playButton.x + playButton.width / 4, playButton.y + playButton.height / 4, 32, BLACK);
                     DrawText("EXIT", exitButton.x + exitButton.width / 4, exitButton.y + exitButton.height / 4, 32, BLACK);   
                 } break;
                 case GAMEPLAY:
                 {
-                    DrawRectangle(0, 0, screenWidth, screenHeight, BLUE);
-                    DrawRectangleRec(ground.getRect(), GREEN);
-                    player.draw();
-                    enemy1.draw();
-                    enemy2.draw();
+                    if (gameOver)
+                    {
+                        DrawText("Game Over", screenWidth / 2, screenHeight / 2, 64, BLACK);
+                    }
+                    else
+                    {
+                        DrawRectangle(0, 0, screenWidth, screenHeight, BLUE);
+                        ground.draw();
+                        if (health == 3)
+                        {
+                            health1.draw();
+                            health2.draw();
+                            health3.draw();
+                        }
+
+                        else if (health == 2)
+                        {
+                            health2.draw();
+                            health3.draw();
+                        }
+
+                        else health3.draw();
+                        player.draw();
+                        enemy1.draw();
+                        enemy2.draw();
+
+                        if (spear.speed != 0) spear.draw();
+                    }
                 } break;
                 case BOSS:
                 {
