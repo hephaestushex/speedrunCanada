@@ -46,8 +46,8 @@ int main(void)
 
     // TODO: Initialize all required variables and load all required data here!
 
-    Player player(0, 0, 200, 32, 32);
-    Player spear(player.x, player.y, 0, 32, 32);
+    Player player(0, 0, 200, 32, 32, WHITE);
+    Player spear(player.x, player.y, 0, 32, 32, BROWN);
     Object playButton(screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64, GREEN);
     Object exitButton(screenWidth - screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64, RED);
     Object ground(0, screenHeight - screenHeight / 4, screenWidth, screenHeight, GREEN);

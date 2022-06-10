@@ -5,17 +5,18 @@ class Player
 {
 	public:
         float x, y, speed, width, height;
+        Color color;
         bool e;
         
-	    Player(float pX, float pY, float pSpeed, float pWidth, float pHeight)
+	    Player(float pX, float pY, float pSpeed, float pWidth, float pHeight, Color pColor)
 	    {
 		    x = pX;
 		    y = pY;
 		    speed = pSpeed;
             width = pWidth;
             height = pHeight;
+            color = pColor;
             e = false;
-            
 	    }
 
         Rectangle getRect(){return Rectangle{x, y, width, height};}
@@ -27,7 +28,7 @@ class Player
                 width+=100 * GetFrameTime();
             }
             
-            DrawRectangleRec(getRect(), WHITE);
+            DrawRectangleRec(getRect(), color);
         }	
 
 };
