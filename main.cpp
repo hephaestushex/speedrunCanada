@@ -1,6 +1,6 @@
 #include <iostream>
 #include "raylib.h"
-#include "include/player.hpp"
+#include "include/entities.hpp"
 #include "include/objects.hpp"
 #include "include/enemy.hpp"
 
@@ -48,8 +48,8 @@ int main(void)
 
     // TODO: Initialize all required variables and load all required data here!
 
-    Player player(0, 0, 200, 32, 32, WHITE);
-    Player spear(player.x, player.y, 0, 32, 32, BROWN);
+    Entity player(0, 0, 200, 32, 32, WHITE);
+    Entity spear(player.x, player.y, 0, 32, 32, BROWN);
     Object playButton(screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64, GREEN);
     Object exitButton(screenWidth - screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64, RED);
     Object ground(0, screenHeight - screenHeight / 4, screenWidth, screenHeight, GREEN);
@@ -142,33 +142,14 @@ int main(void)
                 if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
                 {
                     player.x -= player.speed * GetFrameTime();
+                    spearDirection = -1;
                 }
 
                 if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))
                 {
                     player.x += player.speed * GetFrameTime();
+                    spearDirection = 1;
                 }
-
-                if (IsKeyPressed(KEY_SPACE))  //&& spearDirection == 0 && !spearFallen) 
-                {
-                    spearTargetX = player.x - spear.speed;
-                    spear.x = player.x;
-                    spear.y = ground.y - spear.height;
-                    spearDirection = -1;
-                }
-
-                if (spearTargetX != 0 && spearDirection == -1)
-                {
-                    spear.x -= spear.speed * GetFrameTime();
-                    if (spear.x < spearTargetX)
-                    {
-                        spearDirection = 0;
-                        spearTargetX = 0;
-                        spearFallen = true;
-                    }
-                }
-
-                if (spear.x < 0 || spear.x > GetScreenWidth() - spear.width) spearFallen = true;
 
                 if (!grounded) gravity += 10 * GetFrameTime();
 
@@ -203,6 +184,25 @@ int main(void)
                 if (enemy2.x < 0) enemy2.x = GetScreenWidth();
                 if (enemy2.x > screenWidth) enemy2.x = 0;
 
+                spear.pos = player.pos;
+
+                if (IsKeyReleased(KEY_SPACE) && spearTargetX == 0)
+                {
+                    spearTargetX = spearDirection * spear.speed;
+                }
+
+                if (spearTargetX != 0)
+                {
+                    spear.x += spear.speed * spearDirection * GetFrameTime();
+                }
+
+                if (spear.x < spearTargetX && spearDirection == -1)
+                {
+                    spearFallen = true;
+                    spearDirection = 0;
+                    spearTargetX = 0;
+                }
+
                 if (CheckCollisionRecs(player.getRect(), enemy1.getRect()) || CheckCollisionRecs(player.getRect(), enemy2.getRect()))
                 {
                     health--;
@@ -213,7 +213,7 @@ int main(void)
 
                 if (CheckCollisionRecs(player.getRect(), spear.getRect()))
                 {
-                    spear.x = 0; spear.y = 0;
+                    spear.x = player.x; spear.y = player.y;
                     spearTargetX = 0;
                     spearDirection = 0;
                     spearFallen = false;

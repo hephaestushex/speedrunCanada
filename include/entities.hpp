@@ -1,14 +1,15 @@
 #include <iostream>
 #include "raylib.h"
 
-class Player
+class Entity
 {
 	public:
         float x, y, speed, width, height;
+        Vector2 pos{x, y};
         Color color;
         bool e;
         
-	    Player(float pX, float pY, float pSpeed, float pWidth, float pHeight, Color pColor)
+	    Entity(float pX, float pY, float pSpeed, float pWidth, float pHeight, Color pColor)
 	    {
 		    x = pX;
 		    y = pY;
@@ -17,7 +18,7 @@ class Player
             height = pHeight;
             color = pColor;
             e = false;
-	    }
+        }
 
         Rectangle getRect(){return Rectangle{x, y, width, height};}
 
