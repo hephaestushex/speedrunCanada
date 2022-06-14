@@ -184,7 +184,11 @@ int main(void)
                 if (enemy2.x < 0) enemy2.x = GetScreenWidth();
                 if (enemy2.x > screenWidth) enemy2.x = 0;
 
-                spear.pos = player.pos;
+                if (spearTargetX == 0 && !spearFallen && spearDirection == 0)
+                {
+                    spear.x = player.x;
+                    spear.y = player.y;
+                }
 
                 if (IsKeyReleased(KEY_SPACE) && spearTargetX == 0)
                 {
@@ -196,7 +200,7 @@ int main(void)
                     spear.x += spear.speed * spearDirection * GetFrameTime();
                 }
 
-                if (spear.x < spearTargetX && spearDirection == -1)
+                if ((spear.x < spearTargetX && spearDirection == -1) || (spear.x > spearTargetX && spearDirection == 1))
                 {
                     spearFallen = true;
                     spearDirection = 0;
@@ -211,7 +215,7 @@ int main(void)
                     if (health < 1) gameOver = true;
                 }
 
-                if (CheckCollisionRecs(player.getRect(), spear.getRect()))
+                if (CheckCollisionRecs(player.getRect(), spear.getRect()) && spearFallen)
                 {
                     spear.x = player.x; spear.y = player.y;
                     spearTargetX = 0;
