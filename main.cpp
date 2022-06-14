@@ -11,6 +11,7 @@ bool levelStart = true;
 bool grounded = false;
 bool jump = false;
 bool spearFallen = false;
+bool spearThrown = false;
 bool leaveGame = false;
 
 float gravity = 0;
@@ -121,12 +122,14 @@ int main(void)
                     level++;
                     play = false;
                     health = 3;
-                    float maxEnemies = level * 5;
-                    float levelEnemyHits = level * 10;
+                    maxEnemies = 4;
+                    levelEnemyHits = 2;
                     enemy1.x = screenWidth / 2 - 64;
                     enemy1.y = ground.y - 32;
                     enemy2.x = screenWidth / 2 + 64;
                     enemy2.y = ground.y - 32;
+                    enemy1.hits = levelEnemyHits;
+                    enemy2.hits = levelEnemyHits;
                     player.x = ground.x;
                     player.y = ground.y - player.height;
                     spear.x = 0;
@@ -137,18 +140,18 @@ int main(void)
                     spearFallen = false; 
                     spearDirection = 0;
                     spearTargetX = 0;
+                    spearThrown = false;
+                    spear.speed = 200;
                 }
             
                 if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
                 {
                     player.x -= player.speed * GetFrameTime();
-                    spearDirection = -1;
                 }
 
                 if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))
                 {
                     player.x += player.speed * GetFrameTime();
-                    spearDirection = 1;
                 }
 
                 if (!grounded) gravity += 10 * GetFrameTime();
@@ -184,27 +187,79 @@ int main(void)
                 if (enemy2.x < 0) enemy2.x = GetScreenWidth();
                 if (enemy2.x > screenWidth) enemy2.x = 0;
 
-                if (spearTargetX == 0 && !spearFallen && spearDirection == 0)
+                if (enemy1.hits < 1)
+                {
+                    maxEnemies--;
+                    if (maxEnemies < 2)
+                    {
+                        enemy1.speed = 0;
+                        enemy1.x = screenWidth / 2;
+                        enemy1.y = 0;
+                    }
+                }
+
+                if (enemy2.hits < 1)
+                {
+                    maxEnemies--;
+                    if (maxEnemies < 2)
+                    {
+                        enemy1.speed = 0;
+                        enemy1.x = screenWidth / 2;
+                        enemy1.y = 0;
+                    }
+                }
+
+                if (maxEnemies < 1)
+                {
+                    currentScreen = BOSS;
+                }
+
+                if (!spearThrown)
                 {
                     spear.x = player.x;
                     spear.y = player.y;
                 }
 
-                if (IsKeyReleased(KEY_SPACE) && spearTargetX == 0)
+                if (IsKeyPressed(KEY_SPACE) && !spearThrown && grounded)
                 {
-                    spearTargetX = spearDirection * spear.speed;
+                    spearDirection = 1;
+                    spearTargetX = spear.x + spear.speed;
+                    spearThrown = true;
                 }
 
-                if (spearTargetX != 0)
+                if (IsKeyPressed(KEY_LEFT_SHIFT) && !spearThrown && grounded)
                 {
-                    spear.x += spear.speed * spearDirection * GetFrameTime();
+                    spearDirection = -1;
+                    spearTargetX = spear.x - spear.speed;
+                    spearThrown = true;
                 }
 
-                if ((spear.x < spearTargetX && spearDirection == -1) || (spear.x > spearTargetX && spearDirection == 1))
+                if (spearThrown)
                 {
-                    spearFallen = true;
-                    spearDirection = 0;
+                    if (spearDirection == 1) 
+                    {
+                        spear.x += spear.speed * GetFrameTime();
+                        if (spear.x > spearTargetX)
+                        {
+                            spearFallen = true;
+                        }
+                    }
+                    if (spearDirection == -1) 
+                    {
+                        spear.x -= spear.speed * GetFrameTime();
+                        if (spear.x < spearTargetX)
+                        {
+                            spearFallen = true;
+                        }
+                    }
+                }
+
+                if (spear.x < 0 || spear.x + spear.width > screenWidth) spearFallen = true;
+
+                if (spearFallen)
+                {
                     spearTargetX = 0;
+                    spearDirection = 0;
                 }
 
                 if (CheckCollisionRecs(player.getRect(), enemy1.getRect()) || CheckCollisionRecs(player.getRect(), enemy2.getRect()))
@@ -217,12 +272,29 @@ int main(void)
 
                 if (CheckCollisionRecs(player.getRect(), spear.getRect()) && spearFallen)
                 {
-                    spear.x = player.x; spear.y = player.y;
-                    spearTargetX = 0;
-                    spearDirection = 0;
+                    spearThrown = false;
                     spearFallen = false;
                 }
 
+                if (CheckCollisionRecs(player.getRect(), spear.getRect()) && spearFallen)
+                {
+                    spearThrown = false;
+                    spearFallen = false;
+                }
+
+                if (CheckCollisionRecs(spear.getRect(), enemy1.getRect()) && !spearFallen)
+                {
+                    enemy1.hits--;
+                    std::cout << "ouch\n";
+                    spearFallen = true;
+                }
+
+                if (CheckCollisionRecs(spear.getRect(), enemy2.getRect()) && !spearFallen)
+                {
+                    enemy2.hits--;
+                    std::cout << "ouch\n";
+                    spearFallen = true;
+                }
             } break;
             case BOSS:
             {
