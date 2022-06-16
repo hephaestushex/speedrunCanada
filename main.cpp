@@ -187,33 +187,6 @@ int main(void)
                 if (enemy2.x < 0) enemy2.x = GetScreenWidth();
                 if (enemy2.x > screenWidth) enemy2.x = 0;
 
-                if (enemy1.hits < 1)
-                {
-                    maxEnemies--;
-                    if (maxEnemies < 2)
-                    {
-                        enemy1.speed = 0;
-                        enemy1.x = screenWidth / 2;
-                        enemy1.y = 0;
-                    }
-                }
-
-                if (enemy2.hits < 1)
-                {
-                    maxEnemies--;
-                    if (maxEnemies < 2)
-                    {
-                        enemy1.speed = 0;
-                        enemy1.x = screenWidth / 2;
-                        enemy1.y = 0;
-                    }
-                }
-
-                if (maxEnemies < 1)
-                {
-                    currentScreen = BOSS;
-                }
-
                 if (!spearThrown)
                 {
                     spear.x = player.x;
@@ -285,6 +258,18 @@ int main(void)
                 if (CheckCollisionRecs(spear.getRect(), enemy1.getRect()) && !spearFallen)
                 {
                     enemy1.hits--;
+                    if (enemy1.hits < 0)
+                    {
+                        maxEnemies--;
+                        if (maxEnemies == 1)
+                        {
+                            if
+                        }
+                        if (maxEnemies < 0)
+                        {
+                            currentScreen = BOSS;
+                        }
+                    }
                     std::cout << "ouch\n";
                     spearFallen = true;
                 }
@@ -292,6 +277,14 @@ int main(void)
                 if (CheckCollisionRecs(spear.getRect(), enemy2.getRect()) && !spearFallen)
                 {
                     enemy2.hits--;
+                    if (enemy2.hits < 0)
+                    {
+                        maxEnemies--;
+                        if (maxEnemies < 0)
+                        {
+                            currentScreen = BOSS;
+                        }
+                    }
                     std::cout << "ouch\n";
                     spearFallen = true;
                 }
