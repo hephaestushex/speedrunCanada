@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "raylib.h"
 #include "include/entities.hpp"
 #include "include/objects.hpp"
@@ -122,8 +123,8 @@ int main(void)
                     level++;
                     play = false;
                     health = 3;
-                    maxEnemies = 4;
-                    levelEnemyHits = 2;
+                    maxEnemies = level * 2 + 2;
+                    levelEnemyHits = 3;
                     enemy1.x = screenWidth / 2 - 64;
                     enemy1.y = ground.y - 32;
                     enemy2.x = screenWidth / 2 + 64;
@@ -249,45 +250,35 @@ int main(void)
                     spearFallen = false;
                 }
 
-                if (CheckCollisionRecs(player.getRect(), spear.getRect()) && spearFallen)
-                {
-                    spearThrown = false;
-                    spearFallen = false;
-                }
-
-                if (CheckCollisionRecs(spear.getRect(), enemy1.getRect()) && !spearFallen)
+                if (CheckCollisionRecs(spear.getRect(), enemy1.getRect()) && !spearFallen && spearThrown)
                 {
                     enemy1.hits--;
-                    if (enemy1.hits < 0)
+                    if (enemy1.hits == 0)
                     {
+                        enemy1.x = 0;
+                        enemy1.hits = levelEnemyHits;
                         maxEnemies--;
-                        if (maxEnemies == 1)
-                        {
-                            if
-                        }
-                        if (maxEnemies < 0)
-                        {
-                            currentScreen = BOSS;
-                        }
                     }
-                    std::cout << "ouch\n";
                     spearFallen = true;
                 }
 
-                if (CheckCollisionRecs(spear.getRect(), enemy2.getRect()) && !spearFallen)
+                if (CheckCollisionRecs(spear.getRect(), enemy2.getRect()) && !spearFallen && spearThrown)
                 {
                     enemy2.hits--;
-                    if (enemy2.hits < 0)
+                    if (enemy2.hits == 0)
                     {
+                        enemy2.x = 0;
+                        enemy2.hits = levelEnemyHits;
                         maxEnemies--;
-                        if (maxEnemies < 0)
-                        {
-                            currentScreen = BOSS;
-                        }
                     }
-                    std::cout << "ouch\n";
                     spearFallen = true;
                 }
+
+                if (maxEnemies < 0)
+                {
+                    currentScreen = BOSS;
+                }
+
             } break;
             case BOSS:
             {

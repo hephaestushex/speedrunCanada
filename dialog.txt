@@ -1,0 +1,20 @@
+The defaults are W for Jump, A for Left
+D for Right, Space bar to fire right, 
+Left Shift to fire left. 
+Left mouse button to click buttons. 
+Review instructions.txt to get custom keybinds
+Your goal is to vanquish the incompetent
+Prime Minister of Canada and to do so,
+journey through Canada and face its local enemies.
+The enemies are fish, angry farmers, polar bears,
+angry townsfolk and the Prime Minister
+So you think you can be a better
+prime minister than me, eh?
+Don't believe what people say. I am the best!
+But to show I am the best, I will give you the
+chance to be the Prime Minister!
+Simply answer issues, and whoever gets the most
+happiness out of the people win!
+NOOO! NOOO! My job ... gone! 
+Fine, have the job!
+WAAAAAAAA!!!!
