@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <string>
 #include "raylib.h"
 #include "include/entities.hpp"
 #include "include/objects.hpp"
@@ -14,6 +16,10 @@ bool jump = false;
 bool spearFallen = false;
 bool spearThrown = false;
 bool leaveGame = false;
+bool showControlsText = false;
+bool showStoryText = false;
+bool bossCutsceneOne = true;
+bool bossCutsceneTwo = false;
 
 float gravity = 0;
 float maxJumpHeight;
@@ -23,6 +29,9 @@ float levelEnemyHits = level * 10;
 float health = 3;
 float spearTargetX;
 float spearDirection;
+
+std::vector<std::string> dialogs;
+std::vector<int> dialogLeft;
 
 //------------------------------------------------------------------------------------------
 // Types and Structures Definition
@@ -54,6 +63,8 @@ int main(void)
     Entity spear(player.x, player.y, 0, 32, 32, BROWN);
     Object playButton(screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64, GREEN);
     Object exitButton(screenWidth - screenWidth / 4 - 64, screenHeight - screenHeight / 4 - 32, 128, 64, RED);
+    Object controlsButton(screenWidth / 4 - 64, screenHeight / 4 - 32, 128, 64, YELLOW);
+    Object storyButton(screenWidth - screenWidth / 4 - 64, screenHeight / 4 - 32, 128, 64, YELLOW);
     Object ground(0, screenHeight - screenHeight / 4, screenWidth, screenHeight, GREEN);
     Object health1(screenWidth - 160, 0, 32, 32, RED);
     Object health2(screenWidth - 96, 0, 32, 32, RED);
@@ -63,11 +74,25 @@ int main(void)
 
     maxJumpHeight = ground.y - player.height * 5 - player.height;
 
+    std::ifstream dialog("dialog.txt");
+
+    int index = 0;
+    std::string temp;
+
+    while (std::getline (dialog, temp)) {
+  		// Output the text from the file
+		dialogs.push_back(temp);
+		index++;
+	}
+
+
     //seed the pseudorand generator
 
     srand(time(0));
 
     int framesCounter = 0;          // Useful to count frames
+
+    index = 10; //set value here for later use
 
     SetTargetFPS(60);               // Set desired framerate (frames-per-second)
     //--------------------------------------------------------------------------------------
@@ -100,6 +125,18 @@ int main(void)
     
                 if (mouseClickInRange(exitButton.x + exitButton.width, exitButton.x, exitButton.y + exitButton.height, exitButton.y)) leaveGame = true;
 
+                if (mouseClickInRange(storyButton.x + storyButton.width, storyButton.x, storyButton.y + storyButton.height, storyButton.y))
+                {
+                    showControlsText = false;
+                    showStoryText = true;
+                }
+
+                if (mouseClickInRange(controlsButton.x + controlsButton.width, controlsButton.x, controlsButton.y + controlsButton.height, controlsButton.y))
+                {
+                    showStoryText = false;
+                    showControlsText = true;
+                }
+
                 levelStart = true;
                 level = 0;
                 gameOver = false;
@@ -113,6 +150,8 @@ int main(void)
 
                 // Press enter to change to BOSS screen
                 
+                currentScreen = BOSS;
+
                 if (gameOver)
                 {
                     if (framesCounter % 300 == 0) currentScreen = TITLE;
@@ -282,13 +321,7 @@ int main(void)
             } break;
             case BOSS:
             {
-                // TODO: Update BOSS screen variables here!
-
-                // Press enter to return to TITLE screen
-                if (IsKeyPressed(KEY_ENTER))
-                {
-                    currentScreen = TITLE;
-                }
+                framesCounter++;
             } break;
             default: break;
         }
@@ -313,9 +346,32 @@ int main(void)
                     DrawRectangle(0, 0, screenWidth, screenHeight, BLUE);
                     playButton.draw();
                     exitButton.draw();
+                    controlsButton.draw();
+                    storyButton.draw();
                     DrawText("speedrunCanada!", 20, 20, 40, BLACK);
                     DrawText("PLAY", playButton.x + playButton.width / 4, playButton.y + playButton.height / 4, 32, BLACK);
-                    DrawText("EXIT", exitButton.x + exitButton.width / 4, exitButton.y + exitButton.height / 4, 32, BLACK);   
+                    DrawText("EXIT", exitButton.x + exitButton.width / 4, exitButton.y + exitButton.height / 4, 32, BLACK);
+                    DrawText("CONTROLS", controlsButton.x + controlsButton.width / 12, controlsButton.y + controlsButton.height / 3, 20, BLACK);
+                    DrawText("STORY", storyButton.x + storyButton.width / 10, storyButton.y + storyButton.height / 4, 32, BLACK);
+                    
+                    if (showControlsText)
+                    {
+                        DrawText(dialogs[0].c_str(), screenWidth / 2 - screenWidth / 6, screenHeight / 2 - screenHeight / 6, 16, BLACK);
+                        DrawText(dialogs[1].c_str(), screenWidth / 2 - screenWidth / 6, screenHeight / 2 - screenHeight / 6 + 48, 16, BLACK);
+                        DrawText(dialogs[2].c_str(), screenWidth / 2 - screenWidth / 6, screenHeight / 2 - screenHeight / 6 + 96, 16, BLACK);
+                        DrawText(dialogs[3].c_str(), screenWidth / 2 - screenWidth / 6, screenHeight / 2 - screenHeight / 6 + 144, 16, BLACK);
+                        DrawText(dialogs[4].c_str(), screenWidth / 2 - screenWidth / 6, screenHeight / 2 - screenHeight / 6 + 192, 16, BLACK);
+                    }
+
+                    if (showStoryText)
+                    {
+                        DrawText(dialogs[5].c_str(), screenWidth / 2 - screenWidth / 6, screenHeight / 2 - screenHeight / 6, 16, BLACK);
+                        DrawText(dialogs[6].c_str(), screenWidth / 2 - screenWidth / 6, screenHeight / 2 - screenHeight / 6 + 48, 16, BLACK);
+                        DrawText(dialogs[7].c_str(), screenWidth / 2 - screenWidth / 6, screenHeight / 2 - screenHeight / 6 + 96, 16, BLACK);
+                        DrawText(dialogs[8].c_str(), screenWidth / 2 - screenWidth / 6, screenHeight / 2 - screenHeight / 6 + 144, 16, BLACK);
+                        DrawText(dialogs[9].c_str(), screenWidth / 2 - screenWidth / 6, screenHeight / 2 - screenHeight / 6 + 192, 16, BLACK);
+                    }
+
                 } break;
                 case GAMEPLAY:
                 {
@@ -345,21 +401,56 @@ int main(void)
                         enemy1.draw();
                         enemy2.draw();
 
-                        //if (spear.speed != 0) 
-                        spear.draw();
+                        if (spearThrown)
+                        {
+                            spear.draw();
+                        }
                     }
                 } break;
                 case BOSS:
                 {
                     // TODO: Draw BOSS screen here!
-                    DrawRectangle(0, 0, screenWidth, screenHeight, BLUE);
-                    DrawText("BOSS SCREEN", 20, 20, 40, DARKBLUE);
-                    DrawText("PRESS ENTER or TAP to RETURN to TITLE SCREEN", 120, 220, 20, DARKBLUE);
 
+                    DrawRectangle(0, 0, screenWidth, screenHeight, BROWN);
+                    
+                    if (bossCutsceneOne)
+                    {
+                        DrawRectangle(screenWidth / 4, screenHeight / 2, 32, 32, BLACK);
+                        DrawRectangle(screenWidth - screenWidth / 4, screenHeight / 2, 32, 32, player.color);
+                        DrawText(dialogs[index].c_str(), screenWidth / 4 + 40, screenHeight / 2 + 64, 16, BLACK);
+                        
+                        if (framesCounter % 120 > 118)index++;
+
+                        if (index == 17)
+                        {
+                            bossCutsceneOne = false;
+                            bossCutsceneTwo = true;
+                        }    
+                    }
+
+                    if (bossCutsceneTwo)
+                    {
+                        DrawRectangle(screenWidth / 4, screenHeight / 2, 32, 32, BLACK);
+                        DrawRectangle(screenWidth - screenWidth / 4, screenHeight / 2, 32, 32, player.color);
+                        DrawText(dialogs[index].c_str(), screenWidth / 4 + 40, screenHeight / 2 + 64, 16, BLACK);
+                        
+                        if (framesCounter % 120 > 118)index++;
+
+                        if (index == 21)
+                        {
+                            bossCutsceneOne = true;
+                            bossCutsceneTwo = false;
+                            framesCounter = 0;
+                            gameWon = true;
+                        }
+                    }
+
+
+                    
                 } break;
                 default: break;
             }
-            
+        
 
         EndDrawing();
         //----------------------------------------------------------------------------------
@@ -371,6 +462,7 @@ int main(void)
     // TODO: Unload all loaded data (textures, fonts, audio) here!
 
     CloseWindow();        // Close window and OpenGL context
+    dialog.close();
     //--------------------------------------------------------------------------------------
 
     return 0;
