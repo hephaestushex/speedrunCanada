@@ -72,12 +72,13 @@ int main(void)
     Enemy enemy1(screenWidth / 2 - 64, ground.y - 32, 100, 32, 32, levelEnemyHits);
     Enemy enemy2(screenWidth / 2 + 64, ground.y - 32, 100, 32, 32, levelEnemyHits);
 
-    maxJumpHeight = ground.y - player.height * 5 - player.height;
+    maxJumpHeight = ground.y - player.height * 7 - player.height;
 
     std::ifstream dialog("dialog.txt");
 
     int index = 0;
     std::string temp;
+    std::string playerTime;
 
     while (std::getline (dialog, temp)) {
   		// Output the text from the file
@@ -91,6 +92,8 @@ int main(void)
     srand(time(0));
 
     int framesCounter = 0;          // Useful to count frames
+    int frameNumberToStop = 0;
+
 
     index = 10; //set value here for later use
 
@@ -138,10 +141,14 @@ int main(void)
                 }
 
                 levelStart = true;
-                level = 0;
+                level = 1;
                 gameOver = false;
 
-                if (play) currentScreen = GAMEPLAY;
+                if (play)
+                {
+                    currentScreen = GAMEPLAY;
+                    framesCounter = 0;
+                }
             } break;
             case GAMEPLAY:
             {
@@ -149,8 +156,6 @@ int main(void)
                 // TODO: Update GAMEPLAY screen variables here!
 
                 // Press enter to change to BOSS screen
-                
-                currentScreen = BOSS;
 
                 if (gameOver)
                 {
@@ -159,7 +164,22 @@ int main(void)
                 
                 if (levelStart)
                 {
-                    level++;
+                    if (level == 1)
+                    {
+                        ground.color = DARKBLUE;
+                    }
+                    else if (level == 2)
+                    {
+                        ground.color = GOLD;
+                    }
+                    else if (level == 3)
+                    { 
+                        ground.color = WHITE;
+                    }
+                    else if (level == 4)
+                    { 
+                        ground.color = DARKGRAY;
+                    }
                     play = false;
                     health = 3;
                     maxEnemies = level * 2 + 2;
@@ -181,7 +201,7 @@ int main(void)
                     spearDirection = 0;
                     spearTargetX = 0;
                     spearThrown = false;
-                    spear.speed = 200;
+                    spear.speed = 400;
                 }
             
                 if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
@@ -315,13 +335,28 @@ int main(void)
 
                 if (maxEnemies < 0)
                 {
-                    currentScreen = BOSS;
+                    level++;
+                    if (level < 5) levelStart = true;
+                    
+                    else
+                    {
+                        currentScreen = BOSS;
+                        level = 0;
+                    }
                 }
 
             } break;
             case BOSS:
             {
                 framesCounter++;
+                if (gameWon)
+                {
+                    if (framesCounter % 300 == 0) currentScreen = TITLE;
+                }
+                if (gameOver)
+                {
+                    if (framesCounter % 300 == 0) currentScreen = TITLE;
+                }
             } break;
             default: break;
         }
@@ -411,46 +446,60 @@ int main(void)
                 {
                     // TODO: Draw BOSS screen here!
 
-                    DrawRectangle(0, 0, screenWidth, screenHeight, BROWN);
-                    
-                    if (bossCutsceneOne)
+                    if (gameWon)
                     {
-                        DrawRectangle(screenWidth / 4, screenHeight / 2, 32, 32, BLACK);
-                        DrawRectangle(screenWidth - screenWidth / 4, screenHeight / 2, 32, 32, player.color);
-                        DrawText(dialogs[index].c_str(), screenWidth / 4 + 40, screenHeight / 2 + 64, 16, BLACK);
-                        
-                        if (framesCounter % 120 > 118)index++;
-
-                        if (index == 17)
-                        {
-                            bossCutsceneOne = false;
-                            bossCutsceneTwo = true;
-                        }    
+                        DrawText("You Won!", screenWidth / 2, screenHeight / 2, 64, BLACK);
+                        DrawText(playerTime.c_str(), screenWidth / 2, screenHeight / 2 - 128, 64, BLACK);    
                     }
 
-                    if (bossCutsceneTwo)
+                    else if (gameOver)
                     {
-                        DrawRectangle(screenWidth / 4, screenHeight / 2, 32, 32, BLACK);
-                        DrawRectangle(screenWidth - screenWidth / 4, screenHeight / 2, 32, 32, player.color);
-                        DrawText(dialogs[index].c_str(), screenWidth / 4 + 40, screenHeight / 2 + 64, 16, BLACK);
-                        
-                        if (framesCounter % 120 > 118)index++;
+                        DrawText("GameOver", screenWidth / 2, screenHeight / 2, 64, BLACK);
+                    }
 
-                        if (index == 21)
+                    else 
+                    {
+                        DrawRectangle(0, 0, screenWidth, screenHeight, BROWN);
+                        
+                        if (bossCutsceneOne)
                         {
-                            bossCutsceneOne = true;
-                            bossCutsceneTwo = false;
-                            framesCounter = 0;
-                            gameWon = true;
+                            DrawRectangle(screenWidth / 4, screenHeight / 2, 32, 32, BLACK);
+                            DrawRectangle(screenWidth - screenWidth / 4, screenHeight / 2, 32, 32, player.color);
+                            DrawText(dialogs[index].c_str(), screenWidth / 4 + 40, screenHeight / 2 + 64, 16, BLACK);
+                            
+                            if (framesCounter % 120 > 118)index++;
+
+                            if (index == 17)
+                            {
+                                bossCutsceneOne = false;
+                                bossCutsceneTwo = true;
+                                index = 16;
+                            }    
+                        }
+
+                        if (bossCutsceneTwo)
+                        {
+                            DrawRectangle(screenWidth / 4, screenHeight / 2, 32, 32, BLACK);
+                            DrawRectangle(screenWidth - screenWidth / 4, screenHeight / 2, 32, 32, player.color);
+                            DrawText(dialogs[index].c_str(), screenWidth / 4 + 40, screenHeight / 2 + 64, 16, BLACK);
+                            
+                            if (framesCounter % 120 > 118)index++;
+
+                            if (index == 20)
+                            {
+                                bossCutsceneOne = true;
+                                bossCutsceneTwo = false;
+                                gameWon = true;
+                                playerTime = "Time: " + std::to_string(framesCounter / 60); 
+                                framesCounter = 0;
+                                std::cout << playerTime << std::endl;
+                            }
                         }
                     }
-
-
                     
                 } break;
                 default: break;
             }
-        
 
         EndDrawing();
         //----------------------------------------------------------------------------------
