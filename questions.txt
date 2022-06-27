@@ -8,7 +8,7 @@ Let me kill the Prime Minister....
 0
 Can I have a loan?
 1
-I want to plant trees!!!
+Can I plant trees?
 0
 Can I fix the water system?
 1
@@ -28,10 +28,13 @@ Can I watch TV?
 1
 Can I sell my products?
 0
-Can I sell pancakes
+Can I sell pancakes?
 1
 Let's start a war!!
 0
 Can I create Nuclear Bombs?
 0
-
+Will you taste my pie?
+0
+Will you give up?
+0

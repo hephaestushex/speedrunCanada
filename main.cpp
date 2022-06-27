@@ -29,8 +29,11 @@ float levelEnemyHits = level * 10;
 float health = 3;
 float spearTargetX;
 float spearDirection;
+float bossHealth;
+float playerHealthBossFight;
 
 std::vector<std::string> dialogs;
+std::vector<std::string> questions;
 std::vector<int> dialogLeft;
 
 //------------------------------------------------------------------------------------------
@@ -75,6 +78,7 @@ int main(void)
     maxJumpHeight = ground.y - player.height * 7 - player.height;
 
     std::ifstream dialog("dialog.txt");
+    std::ifstream question("questions.txt");
 
     int index = 0;
     std::string temp;
@@ -83,6 +87,12 @@ int main(void)
     while (std::getline (dialog, temp)) {
   		// Output the text from the file
 		dialogs.push_back(temp);
+		index++;
+	}
+
+    while (std::getline (question, temp)) {
+  		// Output the text from the file
+		questions.push_back(temp);
 		index++;
 	}
 
@@ -357,6 +367,12 @@ int main(void)
                 {
                     if (framesCounter % 300 == 0) currentScreen = TITLE;
                 }
+
+                playerHealthBossFight = 10;
+                bossHealth = 10;
+
+
+
             } break;
             default: break;
         }
@@ -472,7 +488,6 @@ int main(void)
                             if (index == 17)
                             {
                                 bossCutsceneOne = false;
-                                bossCutsceneTwo = true;
                                 index = 16;
                             }    
                         }
@@ -495,6 +510,12 @@ int main(void)
                                 std::cout << playerTime << std::endl;
                             }
                         }
+
+                        DrawRectangle(screenWidth / 4, screenHeight / 2, 32, 32, BLACK);
+                        DrawRectangle(screenWidth - screenWidth / 4, screenHeight / 2, 32, 32, player.color);
+                        
+                        DrawRectangle(screenWidth / 4 - 64, (screenHeight / 4 - 32) - (bossHealth * 20), 32, bossHealth * 20, GREEN);
+                        DrawRectangle((screenWidth - screenWidth / 4) + 64, screenHeight / 4 - 32 - (playerHealthBossFight * 20), 32, playerHealthBossFight * 20, GREEN);
                     }
                     
                 } break;
