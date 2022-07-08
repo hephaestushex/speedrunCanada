@@ -124,7 +124,7 @@ void getKeys()
     std::string key;
 	std::ifstream file("input.txt");
 
-	for (int i = 0, getline (file, key), i++)
+	for (int i = 0, std::getline(file, key)), i++)
     {
   		// Output the text from the file
 		if (i == 0) jumpButton = map1[key];
