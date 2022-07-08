@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <map>
 #include <vector>
 #include <string>
 #include "raylib.h"
@@ -32,9 +33,108 @@ float spearDirection;
 float bossHealth;
 float playerHealthBossFight;
 
+std::map<std::string, int> map1 = { {"'", 39},
+	{",", 44},
+	{"-", 45},
+	{".", 46},
+	{"/", 47},
+	{"0", 48},
+	{"1", 49},
+	{"2", 50},
+	{"3", 51},
+	{"4", 52},
+	{"5", 53},
+	{"6", 54},
+	{"7", 55},
+	{"8", 56},
+	{"9", 57},
+	{";", 59},
+	{"=", 61},
+	{"a", 65},
+	{"b", 66},
+	{"c", 67},
+	{"d", 68},
+	{"e", 69},
+	{"f", 70},
+	{"g", 71},
+	{"h", 72},
+	{"i", 73},
+	{"j", 74},
+	{"k", 75},
+	{"l", 76},
+	{"m", 77},
+	{"n", 78},
+	{"o", 79},
+	{"p", 80},
+	{"q", 81},
+	{"r", 82},
+	{"s", 83},
+	{"t", 84},
+	{"u", 85},
+	{"v", 86},
+	{"w", 87},
+	{"x", 88},
+	{"y", 89},
+	{"z", 90},
+	{"keypad 0", 320},
+	{"keypad 1", 321},
+	{"keypad 2", 322},
+	{"keypad 3", 323},
+	{"keypad 4", 324},
+	{"keypad 5", 325},
+	{"keypad 6", 326},
+	{"keypad 7", 327},
+	{"keypad 8", 328},
+	{"keypad 9", 329},
+	{"keypad .", 330},
+	{"keypad /", 331},
+	{"keypad *", 332},
+	{"keypad -", 333},
+	{"keypad +", 334},
+	{"keypad enter", 335},
+	{"keypad =", 336},
+	{"[", 91},
+	{"'\'", 92},
+	{"]", 93},
+	{"`", 96},
+	{"space", 32},
+	{"esc", 256},
+	{"enter", 257},
+	{"tab", 258},
+	{"backspace", 259},
+	{"ins", 260},
+	{"del", 261},
+	{"right", 262},
+	{"left", 263},
+	{"down", 264},
+	{"up", 265},
+	{"page up", 266},
+	{"page down", 267},
+	{"home", 268},
+	{"end", 269}
+};
+
 std::vector<std::string> dialogs;
 std::vector<std::string> questions;
 std::vector<int> dialogLeft;
+
+int jumpButton, leftButton, rightButton, shootButton;
+void getKeys()
+{
+    std::string key;
+	std::ifstream file("input.txt");
+
+	for (int i = 0, getline (file, key), i++)
+    {
+  		// Output the text from the file
+		if (i == 0) jumpButton = map1[key];
+		if (i == 1) leftButton = map1[key];
+		if (i == 2) rightButton = map1[key];
+		if (i == 3) shootButton = map1[key];
+    }
+    
+	file.close();
+}
 
 //------------------------------------------------------------------------------------------
 // Types and Structures Definition
@@ -57,6 +157,8 @@ int main(void)
     const int screenHeight = 600;
 
     InitWindow(screenWidth, screenHeight, "speedrunCanada!");
+
+    getKeys();
 
     GameScreen currentScreen = LOGO;
 
@@ -214,12 +316,10 @@ int main(void)
                     spear.speed = 400;
                 }
             
-                if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
-                {
+                if (IsKeyDown(leftButton))
                     player.x -= player.speed * GetFrameTime();
-                }
 
-                if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))
+                if (IsKeyDown(rightButton))
                 {
                     player.x += player.speed * GetFrameTime();
                 }
@@ -230,7 +330,7 @@ int main(void)
 
                 if (grounded) gravity = 0;
 
-                if ((IsKeyDown(KEY_W) || IsKeyDown(KEY_UP)) && grounded) jump = true;
+                if (IsKeyDown(jumpButton) && grounded) jump = true;
 
                 if (player.y >= ground.y - player.height)
                 {
@@ -263,19 +363,19 @@ int main(void)
                     spear.y = player.y;
                 }
 
-                if (IsKeyPressed(KEY_SPACE) && !spearThrown && grounded)
+                if (IsKeyPressed(shootButton) && !spearThrown && grounded)
                 {
                     spearDirection = 1;
                     spearTargetX = spear.x + spear.speed;
                     spearThrown = true;
                 }
 
-                if (IsKeyPressed(KEY_LEFT_SHIFT) && !spearThrown && grounded)
-                {
-                    spearDirection = -1;
-                    spearTargetX = spear.x - spear.speed;
-                    spearThrown = true;
-                }
+                // if (IsKeyPressed(KEY_LEFT_SHIFT) && !spearThrown && grounded)
+                // {
+                //     spearDirection = -1;
+                //     spearTargetX = spear.x - spear.speed;
+                //     spearThrown = true;
+                // }
 
                 if (spearThrown)
                 {
