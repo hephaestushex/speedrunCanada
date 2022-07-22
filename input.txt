@@ -1,4 +1,5 @@
-up
-left
-right
-space
+w
+a
+d
+n
+m

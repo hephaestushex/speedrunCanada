@@ -118,19 +118,22 @@ std::vector<std::string> dialogs;
 std::vector<std::string> questions;
 std::vector<int> dialogLeft;
 
-int jumpButton, leftButton, rightButton, shootButton;
+int jumpButton, leftButton, rightButton, leftShootButton, rightShootButton;
 void getKeys()
 {
     std::string key;
 	std::ifstream file("input.txt");
+    int keyLine = 0;
 
-	for (int i = 0, std::getline(file, key)), i++)
+	while (std::getline(file, key))
     {
   		// Output the text from the file
-		if (i == 0) jumpButton = map1[key];
-		if (i == 1) leftButton = map1[key];
-		if (i == 2) rightButton = map1[key];
-		if (i == 3) shootButton = map1[key];
+		if (keyLine == 0) jumpButton = map1[key]; std::cout << jumpButton << " " << key << "\n";
+		if (keyLine == 1) leftButton = map1[key]; std::cout << leftButton << " " << key << "\n";
+		if (keyLine == 2) rightButton = map1[key]; std::cout << rightButton << " " << key << "\n";
+		if (keyLine == 3) leftShootButton = map1[key]; std::cout << leftShootButton << " " << key << "\n";
+        if (keyLine == 4) rightShootButton = map1[key]; std::cout << rightShootButton << " " << key << "\n";
+        keyLine++;
     }
     
 	file.close();
@@ -363,19 +366,19 @@ int main(void)
                     spear.y = player.y;
                 }
 
-                if (IsKeyPressed(shootButton) && !spearThrown && grounded)
+                if (IsKeyPressed(rightShootButton) && !spearThrown && grounded)
                 {
                     spearDirection = 1;
                     spearTargetX = spear.x + spear.speed;
                     spearThrown = true;
                 }
 
-                // if (IsKeyPressed(KEY_LEFT_SHIFT) && !spearThrown && grounded)
-                // {
-                //     spearDirection = -1;
-                //     spearTargetX = spear.x - spear.speed;
-                //     spearThrown = true;
-                // }
+                if (IsKeyPressed(leftShootButton) && !spearThrown && grounded)
+                {
+                    spearDirection = -1;
+                    spearTargetX = spear.x - spear.speed;
+                    spearThrown = true;
+                }
 
                 if (spearThrown)
                 {
